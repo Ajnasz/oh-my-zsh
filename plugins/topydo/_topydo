@@ -6,9 +6,8 @@
 
 local -a expl _todo_numbers _todo_contexts _todo_projects ret
 _topydo_todo_numbers() {
-	# _todo_numbers=("${(f)$(topydo ls -F "%i:%s")}")
-	_todo_numbers=("${(f)$(_call_program todonumbers topydo ls -F "%i:%s")}")
-	_todo_numbers=("${(f)$(topydo ls -F "%i:%s")}")
+	_todo_numbers=("${(f)$(topydo ls -F "%i: %s")}")
+	# _todo_numbers=("${(f)$(_call_program todonumbers topydo ls -F "%i:%s")}")
 
 }
 
@@ -29,7 +28,7 @@ _topydo_subcommand() {
 			_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
 			;;
 
-		ls)
+		ls|add)
 			case "${words[$CURRENT]:0:1}" in
 				"@")
 					_topydo_todo_contexts
