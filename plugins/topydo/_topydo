@@ -4,27 +4,70 @@
 
 # adb zsh completion, based on adb completion
 
-local -a expl _todo_numbers _todo_contexts _todo_projects ret
+local -a _topydo_todo_numbers
 _topydo_todo_numbers() {
 	_todo_numbers=("${(f)$(topydo ls -F "%i: %s")}")
-	# _todo_numbers=("${(f)$(_call_program todonumbers topydo ls -F "%i:%s")}")
-
 }
 
+local -a _topydo_todo_contexts
 _topydo_todo_contexts() {
 	_todo_contexts=("${(f)$(_call_program todocontexts topydo lscon)}")
 }
 
+local -a _topydo_todo_projects
 _topydo_todo_projects() {
 	_todo_projects=("${(f)$(_call_program todoprojects topydo lsprj)}")
 }
 
+local -a _todo_tags
+_todo_tags=(
+	'due:Set due date'
+	't:Start date (treshold)'
+	'due:Due date'
+	'id:Used to identify dependencies'
+	'p:Used to designate parent items (dependencies)'
+	'star:Add a special mark to items (starring)'
+)
+
+local -a _todo_dep_add_params
+_todo_dep_add_params=(
+	'to'
+	'before'
+	'partof'
+	'after'
+	'parents-of'
+	'children-of'
+)
+
+local -a _todo_dep_subcommands todo_dep_subcommands
+_todo_dep_subcommands=(
+	'add'
+	'rm'
+	'ls'
+	'ls to'
+	'dot'
+	'clean'
+)
+
+local -a _todo_dep_to todo_dep_to
+_todo_dep_to=(
+	'before'
+	'partof'
+	'after'
+	'parents-of'
+	'children-of'
+)
+
+local -a expl ret
+local -a todo_numbers _todo_numbers
+local -a todo_contexts _todo_contexts
+local -a todo_projects _todo_projects
+
 _topydo_subcommand() {
 	integer ret=1
 	case "$words[1]" in
-		rm|del|app|append|do|edit|pri|depri)
+		rm|del|app|append|do|pri|depri)
 			_topydo_todo_numbers
-			# _wanted todo_numbers expl 'todo number' compadd -Q -a _todo_numbers && ret=0
 			_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
 			;;
 
@@ -39,6 +82,51 @@ _topydo_subcommand() {
 					_wanted todo_projects expl 'todo projects' compadd -p '+' -a _todo_projects && ret=0
 					;;
 			esac
+			;;
+		tag)
+			if (( CURRENT < 3 )); then
+				_topydo_todo_numbers
+				_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
+			elif (( CURRENT == 3 )); then
+				_describe -t todo_tags 'todo tags' _todo_tags && ret=0
+			fi
+			;;
+		edit)
+			if (( CURRENT < 3 )); then
+				_topydo_todo_numbers
+				_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
+			fi
+			;;
+		dep)
+			if (( CURRENT == 2 )); then
+				_describe -t todo_dep_subcommands 'todo dep subcommands' _todo_dep_subcommands && ret=0
+			else
+				case "${words[2]}" in
+					"add")
+						if (( CURRENT == 4 )); then
+							_wanted todo_dep_to expl 'todo dep to' compadd -a _todo_dep_to && ret=0
+						elif (( CURRENT == 3 || CURRENT == 5 )); then
+							_topydo_todo_numbers
+							_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
+						fi
+						;;
+					"rm")
+						# TODO query real dependencies
+						if (( CURRENT == 4 )); then
+							_wanted todo_rm_to expl 'todo dep to' compadd 'to' && ret=0
+						elif (( CURRENT == 3 || CURRENT == 5 )); then
+							_topydo_todo_numbers
+							_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
+						fi
+						;;
+					*)
+						if (( CURRENT == 3 )); then
+							_topydo_todo_numbers
+							_describe -t todo_numbers 'todo number' _todo_numbers && ret=0
+						fi
+						;;
+				esac
+			fi
 			;;
 	esac
 	return $ret
