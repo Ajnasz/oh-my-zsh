@@ -1,0 +1,3 @@
+[submodule "custom/plugins/znvm"]
+	path = custom/plugins/znvm
+	url = git@github.com:Ajnasz/znvm.git
