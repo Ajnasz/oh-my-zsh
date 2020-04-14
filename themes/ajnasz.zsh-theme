@@ -1,7 +1,7 @@
-
 aws-profile-ps1() {
 	local AWS_PROFILE_COLOR=""
-	if test ! -z "$AWS_PROFILE";then
+
+	if [ ! -z "$AWS_PROFILE" ] && [ "$AWS_PROFILE" != "default" ];then
 		AWS_PROFILE_COLOR="[%{$fg[green]%}$AWS_PROFILE%{$reset_color%}]"
 	fi
 
