@@ -8,7 +8,8 @@ aws-profile-ps1() {
 	echo "$AWS_PROFILE_COLOR"
 }
 
-PROMPT='$(aws-profile-ps1)%{$fg[cyan]%}%T %{$fg[blue]%}%n%{$fg[yellow]%}@%{$fg[red]%}%M%{$reset_color%}:%{$fg[magenta]%}%~%{$reset_color%}$(git_prompt_info)%(?..[%?]) %(!.#.$) '
+# PROMPT='$(aws-profile-ps1)%{$fg[cyan]%}%T %{$fg[blue]%}%n%{$fg[yellow]%}@%{$fg[red]%}%M%{$reset_color%}:%{$fg[magenta]%}%~%{$reset_color%}$(git_prompt_info)%(?..[%?]) %(!.#.$) '
+PROMPT='$(aws-profile-ps1)%{$fg[cyan]%}%T %{$fg[magenta]%}%~%{$reset_color%}$(git_prompt_info)%(?..[%?]) %(!.#.$) '
 
 if which kube_ps1 > /dev/null;then
 	PROMPT='$(kube_ps1)'$PROMPT
